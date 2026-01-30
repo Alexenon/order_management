@@ -2,10 +2,12 @@ package com.example.xenon.order;
 
 import com.example.xenon.user.User;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity(name = "orders")
 public class Order {
 
@@ -18,7 +20,7 @@ public class Order {
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<OrderItem> items = new ArrayList<>();
+    private List<OrderItem> items = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

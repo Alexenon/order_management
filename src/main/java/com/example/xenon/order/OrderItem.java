@@ -2,9 +2,11 @@ package com.example.xenon.order;
 
 import com.example.xenon.product.Product;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 public class OrderItem {
 
     @Id

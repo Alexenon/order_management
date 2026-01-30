@@ -1,7 +1,9 @@
 package com.example.xenon.user;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity(name = "users")
 public class User {
 
