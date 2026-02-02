@@ -1,9 +1,11 @@
 package com.example.xenon.product;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 
+@Builder
 @Getter
 @SuppressWarnings("ClassCanBeRecord")
 public class CreateProductRequest {
@@ -19,4 +21,3 @@ public class CreateProductRequest {
     }
 
 }
-

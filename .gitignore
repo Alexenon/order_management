@@ -1,10 +1,10 @@
+/build/
 /target/
 .vscode/
 .settings
 .project
 .gradle
 .classpath
-
 *.iml
 .DS_Store
 

@@ -18,6 +18,10 @@ public class ProductService {
         return repository.findById(id);
     }
 
+    public long getProductsCount() {
+        return repository.count();
+    }
+
     public Product createProduct(CreateProductRequest request) {
         Product product = new Product();
         product.setName(request.getName());
