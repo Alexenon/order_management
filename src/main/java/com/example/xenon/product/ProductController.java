@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
@@ -35,7 +38,7 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         try {
             if (productService.findById(id).isEmpty())

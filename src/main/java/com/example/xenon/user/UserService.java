@@ -1,19 +1,26 @@
 package com.example.xenon.user;
 
+import com.example.xenon.utils.BeanValidator;
+import com.example.xenon.utils.exceptions.InternalCriticalException;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BeanValidator validator;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BeanValidator validator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.validator = validator;
     }
 
     public Optional<User> findById(Long id) {
@@ -36,8 +43,29 @@ public class UserService {
         user.setUsername(request.getUsername().trim());
         user.setEmail(request.getEmail().trim());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        return userRepository.save(user);
+        return save(user);
     }
 
+    private User save(User user) {
+        validator.validate(user);
+        try {
+            return userRepository.save(user);
+        } catch (Exception e) {
+            log.info("Cannot save {}", user, e);
+            throw new InternalCriticalException(e);
+        }
+    }
+
+    public void deleteUser(Long userId) {
+        User user = findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Invalid user id: #" + userId));
+
+        try {
+            userRepository.delete(user);
+        } catch (Exception e) {
+            log.error("Cannot delete user #{}", userId, e);
+            throw new InternalCriticalException(e);
+        }
+    }
 
 }

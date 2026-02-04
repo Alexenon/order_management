@@ -1,25 +1,31 @@
 package com.example.xenon.product;
 
+import com.example.xenon.utils.BeanValidator;
+import com.example.xenon.utils.exceptions.InternalCriticalException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ProductService {
 
-    private final ProductRepository repository;
+    private final ProductRepository productRepository;
+    private final BeanValidator validator;
 
-    public ProductService(ProductRepository repository) {
-        this.repository = repository;
+    public ProductService(ProductRepository productRepository, BeanValidator validator) {
+        this.productRepository = productRepository;
+        this.validator = validator;
     }
 
     public Optional<Product> findById(Long id) {
-        return repository.findById(id);
+        return productRepository.findById(id);
     }
 
     public long getProductsCount() {
-        return repository.count();
+        return productRepository.count();
     }
 
     public Product createProduct(CreateProductRequest request) {
@@ -27,14 +33,29 @@ public class ProductService {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPricePerUnit(request.getPricePerUnit());
-        return repository.save(product);
+        return save(product);
     }
 
-    public void deleteProduct(Long id) {
-        Product product = findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Invalid product id: #" + id));
+    public void deleteProduct(Long productId) {
+        Product product = findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Invalid product id: #" + productId));
 
-        repository.delete(product);
+        try {
+            productRepository.delete(product);
+        } catch (Exception e) {
+            log.error("Cannot delete product #{}", productId, e);
+            throw new InternalCriticalException(e);
+        }
+    }
+
+    private Product save(Product product) {
+        validator.validate(product);
+        try {
+            return productRepository.save(product);
+        } catch (Exception e) {
+            log.error("Cannot save {}", product, e);
+            throw new InternalCriticalException(e);
+        }
     }
 
 }
