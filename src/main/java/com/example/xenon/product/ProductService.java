@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -18,6 +19,10 @@ public class ProductService {
     public ProductService(ProductRepository productRepository, BeanValidator validator) {
         this.productRepository = productRepository;
         this.validator = validator;
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
     }
 
     public Optional<Product> findById(Long id) {

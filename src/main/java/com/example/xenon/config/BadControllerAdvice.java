@@ -12,14 +12,16 @@ public class BadControllerAdvice {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(EntityNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
     }
 
     @ExceptionHandler(InternalCriticalException.class)
     public ResponseEntity<String> handleCriticalException(InternalCriticalException exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Service cannot handle the request properly. Please share the steps to reproduce it");
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Service cannot handle the request properly. Please share the steps to reproduce the issue");
     }
 
 

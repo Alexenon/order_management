@@ -36,6 +36,10 @@ public class OrderService {
         this.validator = validator;
     }
 
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
     }
@@ -56,7 +60,7 @@ public class OrderService {
         return save(order);
     }
 
-    public void deleteProduct(Long orderId) {
+    public void deleteOrder(Long orderId) {
         Order order = findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Invalid order id: #" + orderId));
 

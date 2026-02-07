@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -23,15 +22,16 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(userService.findAll());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id, UriComponentsBuilder uriBuilder) {
-        Optional<User> optionalUser = userService.findById(id);
-
-        if (optionalUser.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-
-        User user = optionalUser.get();
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        return userService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/add")
@@ -46,9 +46,6 @@ public class UserController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        if (userService.findById(id).isEmpty())
-            return ResponseEntity.ok().build();
-
         userService.deleteUser(id);
         return new ResponseEntity<>("Product was successfully deleted", HttpStatus.ACCEPTED);
     }

@@ -1,14 +1,12 @@
-package com.example.xenon;
+package com.example.xenon.config.security;
 
-import com.example.xenon.user.User;
 import com.example.xenon.user.UserService;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -21,26 +19,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userService.findByUsername(username)
-                .map(this::getUserDetails)
+                .map(user -> org.springframework.security.core.userdetails.User.builder()
+                        .username(user.getUsername())
+                        .password(user.getPassword())
+                        .authorities(List.of())
+                        .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username doesn't exist"));
-    }
-
-    private UserDetails getUserDetails(User user) {
-        return new UserDetails() {
-            public String getUsername() {
-                return user.getUsername();
-            }
-
-            public String getPassword() {
-                return user.getPassword();
-            }
-
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return List.of();
-            }
-        };
     }
 
 }

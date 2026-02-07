@@ -1,6 +1,5 @@
 package com.example.xenon.product;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,40 +14,30 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(productService.findAll());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
-        try {
-            return productService.findById(id)
-                    .map(this::mapped)
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return new ResponseEntity<>("The create operation cannot be done", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return productService.findById(id)
+                .map(this::mapped)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest request) {
-        try {
-            Product product = productService.createProduct(request);
-            ProductDTO response = mapped(product);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
-        }
+        Product product = productService.createProduct(request);
+        ProductDTO response = mapped(product);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
-        try {
-            if (productService.findById(id).isEmpty())
-                return ResponseEntity.ok().build();
-
-            productService.deleteProduct(id);
-            return new ResponseEntity<>("Product was successfully deleted", HttpStatus.ACCEPTED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("The delete operation cannot be done", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        productService.deleteProduct(id);
+        return new ResponseEntity<>("Product was successfully deleted", HttpStatus.ACCEPTED);
     }
 
     private ProductDTO mapped(Product product) {
@@ -58,6 +47,5 @@ public class ProductController {
                 .pricePerUnit(product.getPricePerUnit())
                 .build();
     }
-
 
 }

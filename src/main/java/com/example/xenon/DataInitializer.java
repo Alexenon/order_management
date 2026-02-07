@@ -22,6 +22,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        /* Fills the database with predefined values */
         fillWithUser();
         fillWithProducts();
     }
